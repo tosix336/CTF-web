@@ -1,5 +1,10 @@
 <?php
-$db = new mysqli(getenv('DB_HOST'), getenv('DB_USER'), getenv('DB_PASSWORD'), getenv('DB_NAME'));
+$db = new mysqli(
+  getenv('DB_HOST') ?: '127.0.0.1',
+  getenv('DB_USER') ?: 'vault',
+  getenv('DB_PASSWORD') ?: 'vault_local_only',
+  getenv('DB_NAME') ?: 'vault'
+);
 if ($db->connect_errno) { http_response_code(503); die('database unavailable'); }
 $db->set_charset('utf8mb4');
 session_start();

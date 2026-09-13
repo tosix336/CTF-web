@@ -18,10 +18,11 @@ services:
     image: ${CTF_IMAGE:-vault-search-web:local}
     build: ./app
     environment:
-      DB_HOST: db
+      DB_HOST: ${DB_HOST:-db}
       DB_NAME: vault
       DB_USER: vault
       DB_PASSWORD: vault_local_only
+      GZCTF_FLAG: ${GZCTF_FLAG:-}
     depends_on:
       db:
         condition: service_healthy

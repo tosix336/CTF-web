@@ -50,35 +50,46 @@ flag 不写死在仓库中，而是在第一次有效上传后动态生成到容
 [+] flag: CTF{vault_随机十六进制}
 ```
 
-## 使用 GitHub / GHCR 镜像
+## 部署到 GZCTF
 
-仓库中的 GitHub Actions 会在推送到 `main` 或 `master` 后自动构建并发布镜像。发布完成后，镜像地址为：
+GZCTF 的容器题目需要填写一个可以独立启动的 Docker 镜像，不会替题目执行本项目的
+`docker-compose.yml`，也不会自动创建本项目中的 MariaDB 服务。因此应使用 GitHub Actions
+发布的单容器镜像，并在 GZCTF 中创建“动态容器”题目。
+
+推荐镜像地址：
 
 ```text
-ghcr.io/tosix336/my-ctf-challenges:latest
+ghcr.io/tosix336/ctf-web:latest
 ```
 
-如果仓库中的 GHCR 容器包设置为公开，其他人可以直接拉取并启动：
+GZCTF 后台建议填写：
+
+```text
+题目类型：动态容器
+容器镜像：ghcr.io/tosix336/ctf-web:latest
+容器端口：80
+网络模式：Open
+```
+
+动态容器的 flag 模板可以填写：
+
+```text
+CTF{vault_[TEAM_HASH]}
+```
+
+容器会读取 GZCTF 注入的 `GZCTF_FLAG`，并在首次上传 WebShell 时写入
+`uploads/.vault_flag`。本地 Compose 没有 GZCTF flag 时，仍会生成随机 flag。
+
+发布前请确认 GitHub Actions 已成功运行，并将 GHCR 容器包设置为 Public。若 GZCTF
+所在服务器拉取镜像失败，先在服务器上测试：
 
 ```powershell
-git clone https://github.com/tosix336/my-ctf-challenges.git
-cd my-ctf-challenges
-docker pull ghcr.io/tosix336/my-ctf-challenges:latest
-$env:CTF_IMAGE = "ghcr.io/tosix336/my-ctf-challenges:latest"
-docker compose pull web
-docker compose up -d
-docker compose ps
+docker pull ghcr.io/tosix336/ctf-web:latest
+docker run --rm -e GZCTF_FLAG=CTF{test_flag} -p 8088:80 ghcr.io/tosix336/ctf-web:latest
 ```
 
-首次启动数据库时仍然需要等待健康检查通过。若要重新生成动态 flag：
-
-```powershell
-docker compose down -v
-docker compose pull web
-docker compose up -d
-```
-
-也可以在没有仓库文件的目录中只保存 `docker-compose.yml` 和 `db/init.sql` 后，将 `CTF_IMAGE` 指向上面的镜像；完整题目源码仍建议从 GitHub 仓库获取。
+如果镜像拉取正常但 GZCTF 仍显示启动失败，查看 GZCTF 的容器日志；最常见原因是填写了
+错误的镜像名、端口写成了 `8088`，或者镜像包仍是 Private。
 
 ## 解题思路
 

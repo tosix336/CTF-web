@@ -8,7 +8,11 @@ if (!preg_match('/\.(jpg|png|phtml)$/i', $name)) die('unsupported artifact');
 $target = __DIR__.'/uploads/'.$name;
 move_uploaded_file($_FILES['file']['tmp_name'], $target);
 if (!file_exists(__DIR__.'/uploads/.vault_flag')) {
-  file_put_contents(__DIR__.'/uploads/.vault_flag', 'CTF{vault_'.bin2hex(random_bytes(12)).'}');
+  $platform_flag = getenv('GZCTF_FLAG');
+  $flag = ($platform_flag !== false && $platform_flag !== '')
+    ? $platform_flag
+    : 'CTF{vault_'.bin2hex(random_bytes(12)).'}';
+  file_put_contents(__DIR__.'/uploads/.vault_flag', $flag);
 }
 echo 'uploaded: <a href="uploads/'.rawurlencode($name).'">'.htmlspecialchars($name).'</a>';
 ?>
