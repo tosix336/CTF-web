@@ -1,0 +1,4 @@
+# Keep generated shells/flags out of Docker build context.
+src/uploads/.vault_flag
+src/uploads/*.phtml
+!src/uploads/.htaccess

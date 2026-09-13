@@ -1,0 +1,19 @@
+# Local/editor noise
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Python/runtime artifacts
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.log
+cookies.txt
+
+# Challenge runtime/generated files
+app/src/uploads/.vault_flag
+app/src/uploads/shell.phtml
+app/src/uploads/*.phtml
+!app/src/uploads/.htaccess
